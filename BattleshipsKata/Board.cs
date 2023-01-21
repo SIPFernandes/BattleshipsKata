@@ -1,4 +1,4 @@
-﻿using BattleshipsKata.Models.Ships;
+﻿using BattleshipsKata.Ships;
 using System;
 using System.Collections.Generic;
 using System.Linq;

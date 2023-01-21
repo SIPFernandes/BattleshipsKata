@@ -4,14 +4,19 @@ namespace BattleshipsKata
 {
     public class Commands
     {       
-        public Commands(PlayerService service) 
+        public Commands() 
         { 
 
         }
 
         public static Player AddPlayer()
         {
-            
+            var playerName = string.Empty;
+
+            while (string.IsNullOrEmpty(playerName))
+                playerName = Console.ReadLine();
+
+            return new Player(playerName);
         }
 
         public static void Start(Player[] players)

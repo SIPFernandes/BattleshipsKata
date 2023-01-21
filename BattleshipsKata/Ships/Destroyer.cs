@@ -1,4 +1,4 @@
-﻿namespace BattleshipsKata.Models.Ships
+﻿namespace BattleshipsKata.Ships
 {
     public class Destroyer : Ship
     {

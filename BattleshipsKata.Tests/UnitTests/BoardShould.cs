@@ -1,4 +1,4 @@
-﻿using BattleshipsKata.Models.Ships;
+﻿using BattleshipsKata.Ships;
 using Microsoft.VisualStudio.CodeCoverage;
 using System;
 using System.Collections.Generic;
