@@ -60,5 +60,10 @@ namespace BattleshipsKata
         {
             return !(left == right);
         }
+
+        public override string ToString()
+        {
+            return $"({X},{Y})";
+        }
     }
 }

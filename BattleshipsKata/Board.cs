@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,10 +13,13 @@ namespace BattleshipsKata
         public int MaxX { get; } = 10;
         public int MaxY { get; } = 10;
         public Dictionary<Coordinate, Ship> ShipsCoords { get; } = new();
+        public Dictionary<Coordinate, bool> FiredShots { get; } = new();        
         public Carrier Carrier { get; } = new Carrier();
         public Destroyer[] Destroyers { get; } = new Destroyer[2];
         public GunShip[] GunShips { get; } = new GunShip[4];
-        
+        public List<Ship> SunkedShips = new();
+    
+
         public Board(int? heigth = null, int? width = null) 
         {
             if (heigth.HasValue)
@@ -29,6 +33,86 @@ namespace BattleshipsKata
             }
             
             CreateShips();
+        }
+
+        public void ShowReport()
+        {
+            var misses = FiredShots.Values.Where(x => x == false).Count();
+
+            var msg = new StringBuilder();
+
+            msg.Append("[ Player1\n" +
+                $"Total Shots: {FiredShots.Count}\n" +
+                $"Misses: {misses}\n" +
+                $"Hits: {FiredShots.Count - misses}\n" +
+                $"Ships sunk: [\n");
+
+            foreach (var ship in SunkedShips)
+            {
+                msg.Append($"     {ship.GetType().Name}: {ship.CellsCoords[0]},\n");
+            }
+
+            Console.WriteLine( msg.ToString());
+
+            Console.WriteLine(ToString());
+        }
+
+        public bool FireValidCoords(Coordinate coords)
+        {
+            if (ShipsCoords.ContainsKey(coords) ||
+                FiredShots.ContainsKey(coords))
+            {
+                return false;
+            }            
+
+            return true;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder msg = new();
+
+            msg.Append($"| ");
+
+            for (var i = 0; i < MaxX; i++)
+            {
+                msg.Append($"{i} |");
+            }
+
+            msg.AppendLine();
+
+            for (var j = 0; j < MaxY; j++)
+            {
+                msg.Append($"{j}");
+
+                for (var i = 0; i < MaxX; i++)
+                {
+                    var coord = new Coordinate(i, j);
+                    char value = '\0';
+
+                    if (ShipsCoords.TryGetValue(coord, out var ship))
+                    {                        
+                        value = ship.Letter;
+                    }
+                    else if (FiredShots.TryGetValue(coord, out bool isHit))
+                    {
+                        if (isHit)
+                        {
+                            value = '0';
+                        }
+                        else
+                        {
+                            value = 'x';
+                        }
+                    }
+
+                    msg.Append($"| {value} |");
+                }
+
+                msg.AppendLine();
+            }
+
+            return msg.ToString();
         }
 
         private void CreateShips()
@@ -78,8 +162,7 @@ namespace BattleshipsKata
                 {
                     validBoardCoords = coords;                    
                 }
-
-                if (!validBoardCoords.HasValue)
+                else
                 {
                     Console.WriteLine("Invalid Input");
                 }

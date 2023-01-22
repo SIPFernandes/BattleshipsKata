@@ -21,6 +21,7 @@ namespace BattleshipsKata
 
         public static void Start(Player[] players)
         {
+            //Must use a board Service to provide the boards in order to mock it
             players[0].Board = new Board();
             players[1].Board = new Board();
         }
@@ -28,38 +29,60 @@ namespace BattleshipsKata
         public void EndTurn() { throw new NotImplementedException();}
         public static void Print(Player player) 
         {
-            Console.Write($"| ");
+            Console.WriteLine(player.Board!.ToString());
+        }
 
-            for (var i = 0; i < player.Board!.MaxX; i++)
+        public void Fire(Player playerTurn, Player enemyPlayer) 
+        {            
+            Coordinate? validCoords = null;
+
+            while (!validCoords.HasValue)
             {
-                Console.Write($"{i} |");
-            }            
+                var possibleCoords = Console.ReadLine();
 
-            Console.WriteLine();
+                var coords = Coordinate.ConvertStringToValidCoord(possibleCoords);
 
-            for (var j = 0; j < player.Board!.MaxY; j++)
-            {
-                Console.Write($"{j}");
-
-                for (var i = 0; i < player.Board!.MaxX; i++)
+                if (coords.HasValue && playerTurn.Board!.FireValidCoords(coords.Value))
                 {
-                    var coord = new Coordinate(i, j);
+                    validCoords = coords;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Input");
+                }
+            }
 
-                    if (player.Board.ShipsCoords.ContainsKey(coord))
-                    {
-                        var ship = player.Board.ShipsCoords[coord];
+            if (enemyPlayer.Board!.ShipsCoords.TryGetValue(validCoords.Value, out Ship? ship))
+            {
+                playerTurn.Board!.FiredShots.Add(validCoords.Value, true);
 
-                        Console.Write($"| { ship.Letter } |");
-                    }
-                    else
-                    {
-                        Console.Write($"|   |");
+                var destroyedShipCells = 0;
+
+                foreach (var cell in ship.CellsCoords)
+                {
+                    if (playerTurn.Board!.FiredShots.ContainsKey(cell))
+                    {          
+                        destroyedShipCells++;
                     }
                 }
 
-                Console.WriteLine();
-            }            
+                if (destroyedShipCells == ship.CellsCoords.Length)
+                {
+                    playerTurn.Board.SunkedShips.Add(ship);
+
+                    Console.WriteLine("Ship has sunk");
+                }
+
+                if (playerTurn.Board.SunkedShips.Count == 7)
+                {
+                    playerTurn.Board.ShowReport();                    
+                    enemyPlayer.Board.ShowReport();                    
+                }
+            }
+            else
+            {
+                playerTurn.Board!.FiredShots.Add(validCoords.Value, false);
+            }
         }
-        public void Fire() { throw new NotImplementedException();}
     }
 }
