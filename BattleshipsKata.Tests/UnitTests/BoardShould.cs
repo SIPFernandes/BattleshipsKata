@@ -115,7 +115,7 @@ namespace BattleshipsKata.Tests.UnitTests
 
                 var coord = new Coordinate(int.Parse(array[0]), int.Parse(array[1]));
 
-                Assert.True(_board.ShipsCoords[coord] == ship.Id);
+                Assert.True(_board.ShipsCoords[coord].Id == ship.Id);
             }
         }
 

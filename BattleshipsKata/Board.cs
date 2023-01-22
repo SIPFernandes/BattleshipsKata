@@ -11,7 +11,7 @@ namespace BattleshipsKata
     {
         public int MaxX { get; } = 10;
         public int MaxY { get; } = 10;
-        public Dictionary<Coordinate, string> ShipsCoords { get; } = new();
+        public Dictionary<Coordinate, Ship> ShipsCoords { get; } = new();
         public Carrier Carrier { get; } = new Carrier();
         public Destroyer[] Destroyers { get; } = new Destroyer[2];
         public GunShip[] GunShips { get; } = new GunShip[4];
@@ -60,7 +60,7 @@ namespace BattleshipsKata
 
                 ship.CellsCoords[i] = coords;
 
-                ShipsCoords.Add(coords, ship.Id);
+                ShipsCoords.Add(coords, ship);
             }
         }
 
