@@ -1,15 +1,17 @@
-﻿using BattleshipsKata.Ships;
+﻿using BattleshipsKata.Services.Interfaces;
+using BattleshipsKata.Ships;
 
 namespace BattleshipsKata
 {
     public class Commands
-    {       
-        public Commands() 
-        { 
-
+    {
+        private readonly IBoardServices _boardServices;
+        public Commands(IBoardServices boardServices) 
+        {
+            _boardServices = boardServices;
         }
 
-        public static Player AddPlayer()
+        public Player AddPlayer()
         {
             var playerName = string.Empty;
 
@@ -19,17 +21,18 @@ namespace BattleshipsKata
             return new Player(playerName);
         }
 
-        public static void Start(Player[] players)
-        {
-            //Must use a board Service to provide the boards in order to mock it
-            players[0].Board = new Board();
-            players[1].Board = new Board();
+        public void Start(Player[] players)
+        {            
+            players[0].Board = _boardServices.CreatNewBoard();
+            players[1].Board = _boardServices.CreatNewBoard();
         }
 
         public void EndTurn() { throw new NotImplementedException();}
-        public static void Print(Player player) 
+        public void Print(Player player) 
         {
-            Console.WriteLine(player.Board!.ToString());
+            var result = _boardServices.PrintBoard(player.Board!);
+
+            Console.WriteLine(result);
         }
 
         public void Fire(Player playerTurn, Player enemyPlayer) 

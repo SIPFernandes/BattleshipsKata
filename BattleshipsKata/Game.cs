@@ -1,4 +1,6 @@
-﻿namespace BattleshipsKata
+﻿using BattleshipsKata.Services.Implementations;
+
+namespace BattleshipsKata
 {
     public class Game
     {
@@ -6,8 +8,9 @@
         public Player[] Players { get; }        
 
         public Game() 
-        { 
-            Commands = new Commands();
+        {
+            var boardService = new BoardServices();
+            Commands = new Commands(boardService);
             Players = new Player[2];            
         }
     }

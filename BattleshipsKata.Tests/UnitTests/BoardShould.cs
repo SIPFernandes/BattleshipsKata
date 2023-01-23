@@ -64,16 +64,17 @@ namespace BattleshipsKata.Tests.UnitTests
         [Fact]
         public void InvalidCoordinateMessage()
         {
-            var carrierCoords = "0,0\n0,-1\n0,1\n0,2\n0,3\n";
-            var destroyerCoords1 = "1,0\n1,1\n2,1\n1,2\n";
-            var destroyerCoords2 = "0,0\n2,0\n2,1\n2,2\n";
-            var gunShip1 = "3,0\n";
-            string gunShip2 = "4,0\n";
-            string gunShip3 = "5,0\n";
-            string gunShip4 = "6,0\n";
+            StringBuilder stringBuilder = new();
 
-            var input = carrierCoords + destroyerCoords1 + destroyerCoords2 +
-                gunShip1 + gunShip2 + gunShip3 + gunShip4;
+            stringBuilder.Append("0,0\n0,-1\n0,1\n0,2\n0,3\n");
+            stringBuilder.Append("1,0\n1,1\n2,1\n1,2\n");
+            stringBuilder.Append("0,0\n2,0\n2,1\n2,2\n");
+            stringBuilder.Append("3,0\n");
+            stringBuilder.Append("4,0\n");
+            stringBuilder.Append("5,0\n");
+            stringBuilder.Append("6,0\n");
+
+            var input = stringBuilder.ToString();
 
             var sw = new StringWriter();
             using var sr = new StringReader(input);

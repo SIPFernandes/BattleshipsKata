@@ -3,11 +3,11 @@ using BattleshipsKata;
 
 var game = new Game();
 
-game.Players[0] = Commands.AddPlayer();
+game.Players[0] = game.Commands.AddPlayer();
 
-game.Players[1] = Commands.AddPlayer();
+game.Players[1] = game.Commands.AddPlayer();
 
-Commands.Start(game.Players);
+game.Commands.Start(game.Players);
 
-Commands.Print(game.Players[0]);
-Commands.Print(game.Players[1]);
+game.Commands.Print(game.Players[0]);
+game.Commands.Print(game.Players[1]);

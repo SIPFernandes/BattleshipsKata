@@ -1,20 +1,18 @@
-﻿using BattleshipsKata.Ships;
+﻿using BattleshipsKata.Services.Interfaces;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BattleshipsKata.Tests.UnitTests
 {
     public class CommandsShould
     {
-        private readonly Commands _commands;
+        private readonly Commands _commands;        
+        private readonly Mock<IBoardServices> _boardServices;        
 
         public CommandsShould()
         {
-            _commands = new Commands();
+            _boardServices = new Mock<IBoardServices>();            
+
+            _commands = new Commands(_boardServices.Object);            
         }
 
         [Fact]
@@ -27,7 +25,7 @@ namespace BattleshipsKata.Tests.UnitTests
             {
                 Console.SetIn(sr);
 
-                player = Commands.AddPlayer();                              
+                player = _commands.AddPlayer();                              
             }            
 
             Assert.NotNull(player);
@@ -38,63 +36,34 @@ namespace BattleshipsKata.Tests.UnitTests
         public void StartGame()
         {
             var player1 = new Player("Player1");
-            var player2 = new Player("Player2");
-            
-            Commands.Start(new Player[]
+            var player2 = new Player("Player2");                       
+
+            _commands.Start(new Player[]
             {
                   player1,
                   player2
             });
 
-            Assert.NotNull(player1.Board);            
-            Assert.NotNull(player2.Board);            
+            _boardServices.Verify(x => x.CreatNewBoard(), Times.Exactly(2));
         }
 
         [Fact]
         public void Print()
         {
-            var player1 = new Player("player1");
+            var player1 = new Player("Player1");
 
-            var boardMock = new Mock<Board>();
+            var boardPrint = "Print Called";
 
-            var carrier = new Carrier();
-            var destroyer = new Destroyer();
-            var gunShip1 = new GunShip();
-            var gunShip2 = new GunShip();
+            _boardServices.Setup(x => x.PrintBoard(player1.Board!))
+                .Returns(boardPrint);
 
-            boardMock.SetupGet(x => x.Destroyers)
-                .Returns(new Destroyer[]
-                {
-                    destroyer
-                });                
-            boardMock.SetupGet(x => x.GunShips)
-                .Returns(new GunShip[]
-                {
-                    gunShip1
-                });
+            var sr = new StringWriter();
 
-            boardMock.SetupGet(x => x.ShipsCoords)
-                .Returns(() => new()
-                {
-                    { new Coordinate(0, 0), carrier },
-                    { new Coordinate(0, 1), carrier },
-                    { new Coordinate(0, 2), carrier },
-                    { new Coordinate(0, 3), carrier },
-                    { new Coordinate(1, 1), destroyer },
-                    { new Coordinate(1, 2), destroyer },
-                    { new Coordinate(1, 3), destroyer },
-                    { new Coordinate(4, 4), gunShip1 },
-                    { new Coordinate(5, 5), gunShip2 },
-                });
+            Console.SetOut(sr);
 
-            player1.Board = boardMock.Object;
+            _commands.Print(player1);
 
-            using (var sw = new StringWriter())
-            {
-                Commands.Print(player1);                
-
-                Console.WriteLine(sw.ToString());
-            }
+            Assert.Equal(boardPrint + "\r\n", sr.ToString());
         }
     }
 }
